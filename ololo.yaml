@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup-container
+              image: ilayzen/postgres-backup
+              volumeMounts:
+                - mountPath: /var/lib/postgres/backups
+                  name: db-data
+          volumes:
+            - name: db-data
+              persistentVolumeClaim:
+                claimName: postgres-backup-pvc
+          restartPolicy: OnFailure
